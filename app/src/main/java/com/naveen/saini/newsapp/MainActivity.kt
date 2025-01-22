@@ -1,46 +1,26 @@
-package com.naveen.saini.newsapp
+package com.naveen.saini.daggerlearningproject
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.naveen.saini.newsapp.ui.theme.NewsAppTheme
+import androidx.appcompat.app.AppCompatActivity
+import com.naveen.saini.newsapp.NewsMainApplication
+import com.naveen.saini.newsapp.R
+import com.naveen.saini.newsapp.di.component.DaggerActivityComponent
+import com.naveen.saini.newsapp.di.module.ActivityModule
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            NewsAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
-            }
-        }
+        getDependencies()
+        setContentView(R.layout.activity_main)
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    NewsAppTheme {
-        Greeting("Android")
+    private fun getDependencies() {
+        DaggerActivityComponent
+            .builder()
+            .applicationComponent((application as NewsMainApplication).applicationComponent)
+            .activityModule(ActivityModule(this))
+            .build()
+            .inject(this)
     }
 }
